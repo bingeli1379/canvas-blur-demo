@@ -16,24 +16,28 @@
       display: flex;
       height: 100vh;
     }
-    .container div {
+    .container > div {
       text-align: center;
       flex-grow: 1;
       padding: 1rem;
     }
 
     .original {
+      width: 0;
       background-color: antiquewhite;
     }
     .qqqqq {
-      background-color: aquamarine
+      width: 0;
+      background-color: aquamarine;
     }
     .sssss {
+      width: 0;
       background-color: cornflowerblue;
     }
     .function-bar {
       display: flex;
-      justify-content:space-around
+      justify-content:space-around;
+      margin-bottom: 1rem;
     }
     .function-bar button {
       font-weight: 700;
@@ -79,18 +83,29 @@
   </div>
 
   <script>
-    const CANVAS_SIZE = 1600;
+    const CANVAS_SIZE = 1600
+    const LINE_WIDTH = 15
 
     // Original
     const originalCanvas = document.querySelector('#original-canvas')
     const originalReset = document.querySelector('#original-reset')
     const originalDownload = document.querySelector('#original-download')
     const originalCtx = originalCanvas.getContext('2d')
+    // Original Size
     originalCanvas.width = CANVAS_SIZE
     originalCanvas.height = CANVAS_SIZE
+    window.addEventListener('resize', initOriginalCanvas)
+    initOriginalCanvas()
+    function initOriginalCanvas () {
+      originalCtx.setTransform(1, 0, 0, 1, 0, 0)
+      const ratioHeight = CANVAS_SIZE / originalCanvas.clientHeight
+      const ratioWidth = CANVAS_SIZE / originalCanvas.clientWidth
+      originalCtx.scale(ratioHeight, ratioWidth)
+      originalCtx.lineWidth = LINE_WIDTH / (CANVAS_SIZE / originalCanvas.clientWidth)
+    }
+    // Original Init
     originalCtx.fillStyle = '#fff'
     originalCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
-    originalCtx.lineWidth = 3
     originalCtx.lineCap = 'round'
     originalCtx.lineJoin = 'round'
     // Original Function
@@ -105,37 +120,36 @@
         downloadLink.click()
       }, 'image/jpeg', 0.95)
     })
+    // Mouse
+    originalCanvas.addEventListener('mousedown', srartOriginalDraw)
+    originalCanvas.addEventListener('mousemove', drawingOriginal)
+    originalCanvas.addEventListener('mouseup', endOriginalDraw)
+    originalCanvas.addEventListener('mouseleave', endOriginalDraw)
+    // Touch
+    originalCanvas.addEventListener('touchstart', srartOriginalDraw)
+    originalCanvas.addEventListener('touchmove', drawingOriginal)
+    originalCanvas.addEventListener('touchend', endOriginalDraw)
     // Original Draw
     let isDrawOriginal = false
-    originalCanvas.addEventListener('mousedown', e => {
-      const x = (e.x ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
-      const y = (e.y ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+    function srartOriginalDraw(e) {
+      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      console.log(x, y)
       originalCtx.moveTo(x, y)
       originalCtx.beginPath()
       isDrawOriginal = true
-    })
-    originalCanvas.addEventListener('mousemove', e => {
+    }
+    function drawingOriginal(e) {
       if(!isDrawOriginal) return
-      const x = (e.x ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
-      const y = (e.y ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      console.log(x, y)
       originalCtx.lineTo(x, y)
       originalCtx.stroke()
-    })
-    originalCanvas.addEventListener('mouseup', e => {
+    }
+    function endOriginalDraw(e) {
       isDrawOriginal = false
       originalCtx.closePath()
-    })
-    originalCanvas.addEventListener('mouseleave', e => {
-      isDrawOriginal = false
-      originalCtx.closePath()
-    })
-    // Original Resize
-    window.addEventListener('resize', setOriginalCanvasSize)
-    setOriginalCanvasSize()
-    function setOriginalCanvasSize () {
-      const ratioHeight = CANVAS_SIZE / originalCanvas.clientHeight
-      const ratioWidth = CANVAS_SIZE / originalCanvas.clientWidth
-      originalCtx.scale(ratioHeight, ratioWidth)
     }
   </script>
 </body>
