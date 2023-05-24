@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="./favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Blur Test</title>
+  <style>
+    * {
+      font-family: 'Courier New', Courier, monospace;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .container div {
+      text-align: center;
+      flex-grow: 1;
+      padding: 1rem;
+    }
+
+    .original {
+      background-color: antiquewhite;
+    }
+    .qqqqq {
+      background-color: aquamarine
+    }
+    .sssss {
+      background-color: cornflowerblue;
+    }
+    .function-bar {
+      display: flex;
+      justify-content:space-around
+    }
+    .function-bar button {
+      font-weight: 700;
+      color: #fff;
+      background-color: darkgray;
+      border: 0;
+      border-radius: 0.25rem;
+      width: 5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+    h2 {
+      padding-bottom: 1rem;
+    }
+
+    canvas {
+      background-color: #fff;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="original">
+      <h2>Original</h2>
+      <div class="function-bar">
+        <button id="original-reset">Reset</button>
+        <button id="original-download">Download</button>
+      </div>
+      <canvas id="original-canvas" />
+    </div>
+
+    <div class="qqqqq">
+      <h2>Original</h2>
+      <!-- <canvas id="canvas-original" /> -->
+    </div>
+
+    <div class="sssss">
+      <h2>Original</h2>
+      <!-- <canvas id="canvas-original" /> -->
+    </div>
+  </div>
+
+  <script>
+    const CANVAS_SIZE = 1600;
+
+    // Original
+    const originalCanvas = document.querySelector('#original-canvas')
+    const originalReset = document.querySelector('#original-reset')
+    const originalDownload = document.querySelector('#original-download')
+    const originalCtx = originalCanvas.getContext('2d')
+    originalCanvas.width = CANVAS_SIZE
+    originalCanvas.height = CANVAS_SIZE
+    originalCtx.fillStyle = '#fff'
+    originalCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    originalCtx.lineWidth = 3
+    originalCtx.lineCap = 'round'
+    originalCtx.lineJoin = 'round'
+    // Original Function
+    originalReset.addEventListener('click', () => {
+      originalCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    })
+    originalDownload.addEventListener('click', () => {
+      originalCanvas.toBlob(blob => {
+        const downloadLink = document.createElement('a')
+        downloadLink.href = URL.createObjectURL(blob)
+        downloadLink.download = 'original.jpeg'
+        downloadLink.click()
+      }, 'image/jpeg', 0.95)
+    })
+    // Original Draw
+    let isDrawOriginal = false
+    originalCanvas.addEventListener('mousedown', e => {
+      const x = (e.x ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
+      const y = (e.y ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      originalCtx.moveTo(x, y)
+      originalCtx.beginPath()
+      isDrawOriginal = true
+    })
+    originalCanvas.addEventListener('mousemove', e => {
+      if(!isDrawOriginal) return
+      const x = (e.x ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
+      const y = (e.y ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      originalCtx.lineTo(x, y)
+      originalCtx.stroke()
+    })
+    originalCanvas.addEventListener('mouseup', e => {
+      isDrawOriginal = false
+      originalCtx.closePath()
+    })
+    originalCanvas.addEventListener('mouseleave', e => {
+      isDrawOriginal = false
+      originalCtx.closePath()
+    })
+    // Original Resize
+    window.addEventListener('resize', setOriginalCanvasSize)
+    setOriginalCanvasSize()
+    function setOriginalCanvasSize () {
+      const ratioHeight = CANVAS_SIZE / originalCanvas.clientHeight
+      const ratioWidth = CANVAS_SIZE / originalCanvas.clientWidth
+      originalCtx.scale(ratioHeight, ratioWidth)
+    }
+  </script>
+</body>
+</html>
