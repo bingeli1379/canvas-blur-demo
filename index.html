@@ -120,7 +120,7 @@
     originalCtx.lineJoin = 'round'
     // Original Function
     originalReset.addEventListener('click', () => {
-      originalCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+      originalCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
     })
     originalDownload.addEventListener('click', () => {
       originalCanvas.toBlob(blob => {
@@ -193,7 +193,7 @@
     deviceCtx.lineJoin = 'round'
     // Device Function
     deviceReset.addEventListener('click', () => {
-      deviceCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+      deviceCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
     })
     deviceDownload.addEventListener('click', () => {
       deviceCanvas.toBlob(blob => {
@@ -262,7 +262,7 @@
     curveCtx.lineJoin = 'round'
     // Curve Function
     curveReset.addEventListener('click', () => {
-      curveCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+      curveCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
     })
     curveDownload.addEventListener('click', () => {
       curveCanvas.toBlob(blob => {
