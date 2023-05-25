@@ -14,7 +14,7 @@
     }
     .container {
       display: flex;
-      height: 100vh;
+      min-height: 100vh;
     }
     .container > div {
       text-align: center;
@@ -70,7 +70,7 @@
     </div>
 
     <div class="device">
-      <h2>Device</h2>
+      <h2>Device(<span id="device-ratio">1</span>)</h2>
       <div class="function-bar">
         <button id="device-reset">Reset</button>
         <button id="device-download">Download</button>
@@ -95,10 +95,10 @@
     initOriginalCanvas()
     function initOriginalCanvas () {
       originalCtx.setTransform(1, 0, 0, 1, 0, 0)
-      const ratioHeight = CANVAS_SIZE / originalCanvas.clientHeight
       const ratioWidth = CANVAS_SIZE / originalCanvas.clientWidth
-      originalCtx.scale(ratioHeight, ratioWidth)
-      originalCtx.lineWidth = LINE_WIDTH / (CANVAS_SIZE / originalCanvas.clientWidth)
+      const ratioHeight = CANVAS_SIZE / originalCanvas.clientHeight
+      originalCtx.scale(ratioWidth , ratioHeight)
+      originalCtx.lineWidth = LINE_WIDTH / ratioWidth
     }
     // Original Init
     originalCtx.fillStyle = '#fff'
@@ -129,44 +129,49 @@
     // Original Draw
     let isDrawOriginal = false
     function srartOriginalDraw(e) {
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
-      originalCtx.moveTo(x, y)
+      const point = getOriginalPoint(e)
+      originalCtx.moveTo(point.x, point.y)
       originalCtx.beginPath()
       isDrawOriginal = true
     }
     function drawingOriginal(e) {
       if(!isDrawOriginal) return
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
-      originalCtx.lineTo(x, y)
+      const point = getOriginalPoint(e)
+      originalCtx.lineTo(point.x, point.y)
       originalCtx.stroke()
     }
     function endOriginalDraw(e) {
-      isDrawOriginal = false
       originalCtx.closePath()
+      isDrawOriginal = false
+    }
+    function getOriginalPoint(e) {
+      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      return { x, y }
     }
 
     // ----------------------------------------------------------------------------------------
 
     // Device
     const deviceCanvas = document.querySelector('#device-canvas')
+    const deviceRatio = document.querySelector('#device-ratio')
     const deviceReset = document.querySelector('#device-reset')
     const deviceDownload = document.querySelector('#device-download')
     const deviceImage = document.querySelector('#device-img')
     const deviceCtx = deviceCanvas.getContext('2d')
     // Device Size
+    const devicePixelRatio = window.devicePixelRatio || 1
+    deviceRatio.innerHTML = `${parseFloat(devicePixelRatio.toFixed(2))}`
+    deviceCanvas.width = CANVAS_SIZE * devicePixelRatio
+    deviceCanvas.height = CANVAS_SIZE * devicePixelRatio
     window.addEventListener('resize', initDeviceCanvas)
     initDeviceCanvas()
     function initDeviceCanvas () {
       deviceCtx.setTransform(1, 0, 0, 1, 0, 0)
-      const deviceDevice = window.devicePixelRatio || 1
-      deviceCanvas.width = CANVAS_SIZE * deviceDevice
-      deviceCanvas.height = CANVAS_SIZE * deviceDevice
-      const deviceHeight = (CANVAS_SIZE * deviceDevice) / deviceCanvas.clientHeight
-      const deviceWidth = (CANVAS_SIZE * deviceDevice) / deviceCanvas.clientWidth
-      deviceCtx.scale(deviceHeight, deviceWidth)
-      deviceCtx.lineWidth = LINE_WIDTH / (CANVAS_SIZE / deviceCanvas.clientWidth)
+      const ratioWidth = (CANVAS_SIZE * devicePixelRatio) / deviceCanvas.clientWidth
+      const ratioHeight = (CANVAS_SIZE * devicePixelRatio) / deviceCanvas.clientHeight
+      deviceCtx.scale(ratioWidth, ratioHeight)
+      deviceCtx.lineWidth = (LINE_WIDTH * devicePixelRatio) / ratioWidth
     }
     // Device Init
     deviceCtx.fillStyle = '#fff'
@@ -197,22 +202,25 @@
     // Device Draw
     let isDrawDevice = false
     function srartDeviceDraw(e) {
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - deviceCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - deviceCanvas.offsetTop
-      deviceCtx.moveTo(x, y)
+      const point = getDevicePoint(e)
+      deviceCtx.moveTo(point.x, point.y)
       deviceCtx.beginPath()
       isDrawDevice = true
     }
     function drawingDevice(e) {
       if(!isDrawDevice) return
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - deviceCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - deviceCanvas.offsetTop
-      deviceCtx.lineTo(x, y)
+      const point = getDevicePoint(e)
+      deviceCtx.lineTo(point.x, point.y)
       deviceCtx.stroke()
     }
     function endDeviceDraw(e) {
-      isDrawDevice = false
       deviceCtx.closePath()
+      isDrawDevice = false
+    }
+    function getDevicePoint(e) {
+      const x = (e.clientX ?? e.targetTouches[0].pageX) - deviceCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].pageY) - deviceCanvas.offsetTop
+      return { x, y }
     }
   </script>
 </body>
