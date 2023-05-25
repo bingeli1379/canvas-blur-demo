@@ -30,6 +30,10 @@
       width: 0;
       background-color: aquamarine;
     }
+    .curve {
+      width: 0;
+      background-color: cornflowerblue;
+    }
     .function-bar {
       display: flex;
       justify-content:space-around;
@@ -76,6 +80,15 @@
         <button id="device-download">Download</button>
       </div>
       <canvas id="device-canvas"></canvas>
+    </div>
+
+    <div class="curve">
+      <h2>Curve</h2>
+      <div class="function-bar">
+        <button id="curve-reset">Reset</button>
+        <button id="curve-download">Download</button>
+      </div>
+      <canvas id="curve-canvas"></canvas>
     </div>
   </div>
 
@@ -221,6 +234,94 @@
       const x = (e.clientX ?? e.targetTouches[0].pageX) - deviceCanvas.offsetLeft
       const y = (e.clientY ?? e.targetTouches[0].pageY) - deviceCanvas.offsetTop
       return { x, y }
+    }
+
+    // ----------------------------------------------------------------------------------------
+
+    // Curve
+    const curveCanvas = document.querySelector('#curve-canvas')
+    const curveReset = document.querySelector('#curve-reset')
+    const curveDownload = document.querySelector('#curve-download')
+    const curveCtx = curveCanvas.getContext('2d')
+    // Curve Size
+    curveCanvas.width = CANVAS_SIZE
+    curveCanvas.height = CANVAS_SIZE
+    window.addEventListener('resize', initCurveCanvas)
+    initCurveCanvas()
+    function initCurveCanvas () {
+      curveCtx.setTransform(1, 0, 0, 1, 0, 0)
+      const ratioWidth = CANVAS_SIZE / curveCanvas.clientWidth
+      const ratioHeight = CANVAS_SIZE / curveCanvas.clientHeight
+      curveCtx.scale(ratioWidth , ratioHeight)
+      curveCtx.lineWidth = LINE_WIDTH / ratioWidth
+    }
+    // Curve Init
+    curveCtx.fillStyle = '#fff'
+    curveCtx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    curveCtx.lineCap = 'round'
+    curveCtx.lineJoin = 'round'
+    // Curve Function
+    curveReset.addEventListener('click', () => {
+      curveCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    })
+    curveDownload.addEventListener('click', () => {
+      curveCanvas.toBlob(blob => {
+        const downloadLink = document.createElement('a')
+        downloadLink.href = URL.createObjectURL(blob)
+        downloadLink.download = 'curve.jpeg'
+        downloadLink.click()
+      }, 'image/jpeg', 1)
+    })
+    // Curve Mouse
+    curveCanvas.addEventListener('mousedown', srartCurveDraw)
+    curveCanvas.addEventListener('mousemove', drawingCurve)
+    curveCanvas.addEventListener('mouseup', endCurveDraw)
+    curveCanvas.addEventListener('mouseleave', endCurveDraw)
+    // Curve Touch
+    curveCanvas.addEventListener('touchstart', srartCurveDraw)
+    curveCanvas.addEventListener('touchmove', drawingCurve)
+    curveCanvas.addEventListener('touchend', endCurveDraw)
+    // Curve Draw
+    let isDrawCurve = false
+    let beginPoint = null
+    const pointList = []
+    function srartCurveDraw(e) {
+      const point = getCurvePoint(e)
+      beginPoint = point
+      pointList.push(point)
+      isDrawCurve = true
+    }
+    function drawingCurve(e) {
+      if(!isDrawCurve) return
+      const point = getCurvePoint(e)
+      pointList.push(point)
+      drawCurveLine()
+    }
+    function endCurveDraw(e) {
+      beginPoint = null
+      this.movePointList = []
+      isDrawCurve = false
+    }
+    function getCurvePoint(e) {
+      const x = (e.clientX ?? e.targetTouches[0].pageX) - curveCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].pageY) - curveCanvas.offsetTop
+      return { x, y }
+    }
+    function drawCurveLine() {
+      if (pointList.length < 3) return
+
+      const lastPoint = pointList.at(-1)
+      const controlPoint = pointList.at(-2)
+      const endPoint = {
+        x: (lastPoint.x + controlPoint.x) / 2,
+        y: (lastPoint.y + controlPoint.y) / 2
+      }
+      curveCtx.beginPath()
+      curveCtx.moveTo(beginPoint.x, beginPoint.y)
+      curveCtx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y)
+      curveCtx.stroke()
+      curveCtx.closePath()
+      beginPoint = endPoint
     }
   </script>
 </body>
