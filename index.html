@@ -95,6 +95,7 @@
   <script>
     const CANVAS_SIZE = 1600
     const LINE_WIDTH = 15
+    const THROTTLE_MS = 5
 
     // Original
     const originalCanvas = document.querySelector('#original-canvas')
@@ -141,6 +142,7 @@
     originalCanvas.addEventListener('touchend', endOriginalDraw)
     // Original Draw
     let isDrawOriginal = false
+    let drawOriginalTimer = null
     function srartOriginalDraw(e) {
       const point = getOriginalPoint(e)
       originalCtx.moveTo(point.x, point.y)
@@ -149,11 +151,18 @@
     }
     function drawingOriginal(e) {
       if(!isDrawOriginal) return
-      const point = getOriginalPoint(e)
-      originalCtx.lineTo(point.x, point.y)
-      originalCtx.stroke()
+
+      if (drawOriginalTimer) clearTimeout(drawOriginalTimer)
+      drawOriginalTimer = setTimeout(() => {
+        const point = getOriginalPoint(e)
+        originalCtx.lineTo(point.x, point.y)
+        originalCtx.stroke()
+        drawOriginalTimer = null
+      }, THROTTLE_MS)
     }
     function endOriginalDraw(e) {
+      clearTimeout(drawOriginalTimer)
+      drawOriginalTimer = null
       originalCtx.closePath()
       isDrawOriginal = false
     }
@@ -214,6 +223,7 @@
     deviceCanvas.addEventListener('touchend', endDeviceDraw)
     // Device Draw
     let isDrawDevice = false
+    let drawDeviceTimer = null
     function srartDeviceDraw(e) {
       const point = getDevicePoint(e)
       deviceCtx.moveTo(point.x, point.y)
@@ -222,11 +232,18 @@
     }
     function drawingDevice(e) {
       if(!isDrawDevice) return
-      const point = getDevicePoint(e)
-      deviceCtx.lineTo(point.x, point.y)
-      deviceCtx.stroke()
+
+      if (drawDeviceTimer) clearTimeout(drawDeviceTimer)
+      drawDeviceTimer = setTimeout(() => {
+        const point = getDevicePoint(e)
+        deviceCtx.lineTo(point.x, point.y)
+        deviceCtx.stroke()
+        drawDeviceTimer = null
+      }, THROTTLE_MS)
     }
     function endDeviceDraw(e) {
+      clearTimeout(drawDeviceTimer)
+      drawDeviceTimer = null
       deviceCtx.closePath()
       isDrawDevice = false
     }
@@ -283,6 +300,7 @@
     curveCanvas.addEventListener('touchend', endCurveDraw)
     // Curve Draw
     let isDrawCurve = false
+    let drawCurveTimer = null
     let beginPoint = null
     const pointList = []
     function srartCurveDraw(e) {
@@ -293,11 +311,18 @@
     }
     function drawingCurve(e) {
       if(!isDrawCurve) return
-      const point = getCurvePoint(e)
-      pointList.push(point)
-      drawCurveLine()
+
+      if (drawCurveTimer) clearTimeout(drawCurveTimer)
+      drawCurveTimer = setTimeout(() => {
+        const point = getCurvePoint(e)
+        pointList.push(point)
+        drawCurveLine()
+        drawCurveTimer = null
+      }, THROTTLE_MS)
     }
     function endCurveDraw(e) {
+      clearTimeout(drawCurveTimer)
+      drawCurveTimer = null
       beginPoint = null
       this.movePointList = []
       isDrawCurve = false
