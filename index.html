@@ -151,14 +151,12 @@
     }
     function drawingOriginal(e) {
       if(!isDrawOriginal) return
+      if (drawOriginalTimer) return
 
-      if (drawOriginalTimer) clearTimeout(drawOriginalTimer)
-      drawOriginalTimer = setTimeout(() => {
-        const point = getOriginalPoint(e)
-        originalCtx.lineTo(point.x, point.y)
-        originalCtx.stroke()
-        drawOriginalTimer = null
-      }, THROTTLE_MS)
+      const point = getOriginalPoint(e)
+      originalCtx.lineTo(point.x, point.y)
+      originalCtx.stroke()
+      drawOriginalTimer = setTimeout(() => drawOriginalTimer = null, THROTTLE_MS)
     }
     function endOriginalDraw(e) {
       clearTimeout(drawOriginalTimer)
@@ -232,14 +230,12 @@
     }
     function drawingDevice(e) {
       if(!isDrawDevice) return
+      if (drawDeviceTimer) return
 
-      if (drawDeviceTimer) clearTimeout(drawDeviceTimer)
-      drawDeviceTimer = setTimeout(() => {
-        const point = getDevicePoint(e)
-        deviceCtx.lineTo(point.x, point.y)
-        deviceCtx.stroke()
-        drawDeviceTimer = null
-      }, THROTTLE_MS)
+      const point = getDevicePoint(e)
+      deviceCtx.lineTo(point.x, point.y)
+      deviceCtx.stroke()
+      drawDeviceTimer = setTimeout(() => drawDeviceTimer = null, THROTTLE_MS)
     }
     function endDeviceDraw(e) {
       clearTimeout(drawDeviceTimer)
@@ -311,14 +307,12 @@
     }
     function drawingCurve(e) {
       if(!isDrawCurve) return
+      if (drawCurveTimer) return
 
-      if (drawCurveTimer) clearTimeout(drawCurveTimer)
-      drawCurveTimer = setTimeout(() => {
-        const point = getCurvePoint(e)
-        pointList.push(point)
-        drawCurveLine()
-        drawCurveTimer = null
-      }, THROTTLE_MS)
+      const point = getCurvePoint(e)
+      pointList.push(point)
+      drawCurveLine()
+      drawCurveTimer = setTimeout(() => drawCurveTimer = null, THROTTLE_MS)
     }
     function endCurveDraw(e) {
       clearTimeout(drawCurveTimer)
