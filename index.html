@@ -167,8 +167,8 @@
       isDrawOriginal = false
     }
     function getOriginalPoint(e) {
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - originalCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - originalCanvas.offsetTop
+      const x = (e.clientX ?? e.targetTouches[0].clientX) - originalCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].clientY) - originalCanvas.offsetTop
       return { x, y }
     }
 
@@ -248,8 +248,8 @@
       isDrawDevice = false
     }
     function getDevicePoint(e) {
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - deviceCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - deviceCanvas.offsetTop
+      const x = (e.clientX ?? e.targetTouches[0].clientX) - deviceCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].clientY) - deviceCanvas.offsetTop
       return { x, y }
     }
 
@@ -328,8 +328,8 @@
       isDrawCurve = false
     }
     function getCurvePoint(e) {
-      const x = (e.clientX ?? e.targetTouches[0].pageX) - curveCanvas.offsetLeft
-      const y = (e.clientY ?? e.targetTouches[0].pageY) - curveCanvas.offsetTop
+      const x = (e.clientX ?? e.targetTouches[0].clientX) - curveCanvas.offsetLeft
+      const y = (e.clientY ?? e.targetTouches[0].clientY) - curveCanvas.offsetTop
       return { x, y }
     }
     function drawCurveLine() {
